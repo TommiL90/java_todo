@@ -17,10 +17,20 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
-    public UserEntity createUser(@Valid UserCreateDTO userEntity) {
-        this.userRepository.findByUsername(userEntity.getUsername()).ifPresent(user -> {
+    public UserEntity createUser(@Valid UserCreateDTO userCreateDTO) {
+        this.userRepository.findByUsername(userCreateDTO.getUsername()).ifPresent(user -> {
             throw new UserFoundException();
         });
+
+        UserEntity userEntity = new UserEntity();
+
+        userEntity.setId(UUID.randomUUID()); // Establece un UUID si es necesario
+        userEntity.setUsername(userCreateDTO.getUsername());
+        userEntity.setName(userCreateDTO.getName());
+        userEntity.setPassword(userCreateDTO.getPassword()); // Asegúrate de manejar el hash de la contraseña correctamente
+
+
+
         return userRepository.save(userEntity);
     }
 

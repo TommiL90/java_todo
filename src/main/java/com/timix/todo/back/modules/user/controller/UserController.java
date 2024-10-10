@@ -19,13 +19,5 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @PostMapping("/")
-    public ResponseEntity<Object> create(@Valid @RequestBody UserCreateDTO userCreateDTO) {
-        try {
-            var result = userService.createUser(userCreateDTO);
-            return ResponseEntity.ok().body(result);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
-    }
+
 }
