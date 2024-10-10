@@ -3,9 +3,13 @@ package com.timix.todo.back.modules.user.service;
 import com.timix.todo.back.exceptions.UserFoundException;
 import com.timix.todo.back.exceptions.UserNotFoundException;
 import com.timix.todo.back.modules.user.dto.UserCreateDTO;
+import com.timix.todo.back.modules.user.dto.UserResponseDTO;
+import com.timix.todo.back.modules.user.dto.UserUpdateDTO;
 import com.timix.todo.back.modules.user.entity.UserEntity;
 import com.timix.todo.back.modules.user.repository.UserRepository;
+import com.timix.todo.back.utils.Utils;
 import jakarta.validation.Valid;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,48 +21,50 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
-    public UserEntity createUser(@Valid UserCreateDTO userCreateDTO) {
+    @Autowired
+    private ModelMapper modelMapper;
+
+    public UserResponseDTO createUser(@Valid UserCreateDTO userCreateDTO) {
         this.userRepository.findByUsername(userCreateDTO.getUsername()).ifPresent(user -> {
             throw new UserFoundException();
         });
 
-        UserEntity userEntity = new UserEntity();
+        var userEntity = modelMapper.map(userCreateDTO, UserEntity.class);
 
-        userEntity.setId(UUID.randomUUID()); // Establece un UUID si es necesario
-        userEntity.setUsername(userCreateDTO.getUsername());
-        userEntity.setName(userCreateDTO.getName());
-        userEntity.setPassword(userCreateDTO.getPassword()); // Asegúrate de manejar el hash de la contraseña correctamente
+        var savedUser = userRepository.save(userEntity);
 
-
-
-        return userRepository.save(userEntity);
+        return modelMapper.map(savedUser, UserResponseDTO.class);
     }
 
-    public UserEntity getUserById(UUID id) {
+    public UserResponseDTO getUserById(UUID id) {
         var user = userRepository.findById(id).orElse(null);
 
         if (user == null) {
             throw new UserNotFoundException();
         }
 
-        return user;
+        return modelMapper.map(user, UserResponseDTO.class);
     }
 
 
-    public UserEntity updateUser(UserEntity userEntity) {
-        var user = userRepository.findById(userEntity.getId()).orElse(null);
+    public UserResponseDTO updateUser(UserUpdateDTO userUpdateDTO, UUID id) {
+        var user = userRepository.findById(id).orElse(null);
 
         if (user == null) {
             throw new UserNotFoundException();
         }
 
-        this.userRepository.findByUsername(userEntity.getUsername()).ifPresent(u -> {
-            if (!u.getId().equals(userEntity.getId())) {
+        this.userRepository.findByUsername(userUpdateDTO.getUsername()).ifPresent(u -> {
+            if (!u.getId().equals(id)){
                 throw new UserFoundException();
             }
         });
 
-        return userRepository.save(userEntity);
+        Utils.copyNonNullProperties(userUpdateDTO, user);
+
+        var updatedUser = userRepository.save(user);
+
+        return modelMapper.map(updatedUser, UserResponseDTO.class);
     }
 
     public void deleteUser(UUID id) {
