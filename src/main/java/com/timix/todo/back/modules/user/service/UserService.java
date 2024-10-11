@@ -11,6 +11,8 @@ import com.timix.todo.back.utils.Utils;
 import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCrypt;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -24,12 +26,19 @@ public class UserService {
     @Autowired
     private ModelMapper modelMapper;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     public UserResponseDTO createUser(@Valid UserCreateDTO userCreateDTO) {
         this.userRepository.findByUsername(userCreateDTO.getUsername()).ifPresent(user -> {
             throw new UserFoundException();
         });
 
         var userEntity = modelMapper.map(userCreateDTO, UserEntity.class);
+
+        var hashedPassword = BCrypt.hashpw(userCreateDTO.getPassword(), BCrypt.gensalt());
+
+        userEntity.setPassword(hashedPassword);
 
         var savedUser = userRepository.save(userEntity);
 
@@ -44,6 +53,10 @@ public class UserService {
         }
 
         return modelMapper.map(user, UserResponseDTO.class);
+    }
+
+    public UserEntity getUserByUsername(String username) {
+        return this.userRepository.findByUsername(username).orElseThrow(UserFoundException::new);
     }
 
 
@@ -76,4 +89,6 @@ public class UserService {
 
         userRepository.deleteById(id);
     }
+
+
 }

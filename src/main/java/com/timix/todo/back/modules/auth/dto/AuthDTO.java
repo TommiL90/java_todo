@@ -1,4 +1,4 @@
-package com.timix.todo.back.modules.user.dto;
+package com.timix.todo.back.modules.auth.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -9,7 +9,7 @@ import org.hibernate.validator.constraints.Length;
 import java.util.UUID;
 
 @Data
-public class UserCreateDTO {
+public class AuthDTO {
     private UUID id;
 
     @NotBlank(message = "Username is required")
