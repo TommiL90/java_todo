@@ -11,7 +11,6 @@ import com.timix.todo.back.utils.Utils;
 import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -36,9 +35,8 @@ public class UserService {
 
         var userEntity = modelMapper.map(userCreateDTO, UserEntity.class);
 
-        var hashedPassword = BCrypt.hashpw(userCreateDTO.getPassword(), BCrypt.gensalt());
-
-        userEntity.setPassword(hashedPassword);
+        // Encode password
+        userEntity.setPassword(passwordEncoder.encode(userCreateDTO.getPassword()));
 
         var savedUser = userRepository.save(userEntity);
 
@@ -56,7 +54,13 @@ public class UserService {
     }
 
     public UserEntity getUserByUsername(String username) {
-        return this.userRepository.findByUsername(username).orElseThrow(UserFoundException::new);
+        var user = this.userRepository.findByUsername(username).orElse(null);
+
+        if (user == null) {
+            throw new UserNotFoundException();
+        }
+
+        return user;
     }
 
 

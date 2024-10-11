@@ -4,7 +4,7 @@ package com.timix.todo.back.modules.user.controller;
 import com.timix.todo.back.modules.user.dto.UserCreateDTO;
 import com.timix.todo.back.modules.user.dto.UserUpdateDTO;
 import com.timix.todo.back.modules.user.service.UserService;
-import com.timix.todo.back.utils.Utils;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -32,32 +32,37 @@ public class UserController {
     }
 
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Object> getUserById(@PathVariable UUID id) {
-
+    @GetMapping("/me")
+    public ResponseEntity<Object> getCurrentUser(HttpServletRequest request) {
+        UUID userId = (UUID) request.getAttribute("idUser");
+        if (userId == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User ID not found in request");
+        }
         try {
-            var result = userService.getUserById(id);
-            return ResponseEntity.ok(result);
+            var result = userService.getUserById(userId);
+            return ResponseEntity.status(HttpStatus.OK).body(result);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
 
-    @PutMapping("/{id}")
-    public ResponseEntity<Object> updateUser(@RequestBody UserUpdateDTO userUpdateDTO, @PathVariable UUID id) {
+    @PutMapping("/me")
+    public ResponseEntity<Object> updateUser(@RequestBody UserUpdateDTO userUpdateDTO, HttpServletRequest request) {
+        UUID userId = (UUID) request.getAttribute("idUser");
         try {
-            var result = userService.updateUser(userUpdateDTO, id);
+            var result = userService.updateUser(userUpdateDTO, userId);
             return ResponseEntity.ok(result);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Object> deleteUser(@PathVariable UUID id) {
+    @DeleteMapping("/me")
+    public ResponseEntity<Object> deleteUser(HttpServletRequest request) {
+        UUID userId = (UUID) request.getAttribute("idUser");
         try {
-            userService.deleteUser(id);
+            userService.deleteUser(userId);
             return ResponseEntity.noContent().build();
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());

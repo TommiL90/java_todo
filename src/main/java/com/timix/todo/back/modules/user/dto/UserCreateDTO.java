@@ -16,6 +16,9 @@ public class UserCreateDTO {
     @Length(min = 5, max = 15, message = "Username must be between 3 and 20 characters")
     private String username;
 
+    @NotBlank(message = "name is required")
+    @Length(min = 5, max = 15, message = "Username must be between 3 and 20 characters")
+    private String name;
 
     @NotBlank(message = "Password is required")
     @Length(min = 5, max = 15, message = "Password must be between 5 and 15 characters")
