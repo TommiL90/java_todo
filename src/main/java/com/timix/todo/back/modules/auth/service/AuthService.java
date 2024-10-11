@@ -5,7 +5,6 @@ import com.timix.todo.back.modules.auth.dto.AuthDTO;
 import com.timix.todo.back.modules.user.service.UserService;
 import com.timix.todo.back.security.JWTProvider;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 
