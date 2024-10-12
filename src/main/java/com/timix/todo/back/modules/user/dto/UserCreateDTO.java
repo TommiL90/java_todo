@@ -10,8 +10,6 @@ import java.util.UUID;
 
 @Data
 public class UserCreateDTO {
-    private UUID id;
-
     @NotBlank(message = "Username is required")
     @Length(min = 5, max = 15, message = "Username must be between 3 and 20 characters")
     private String username;
