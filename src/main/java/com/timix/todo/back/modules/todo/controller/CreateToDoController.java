@@ -2,6 +2,7 @@ package com.timix.todo.back.modules.todo.controller;
 
 import com.timix.todo.back.modules.todo.Dto.CreateToDoDTO;
 import com.timix.todo.back.modules.todo.services.CreateToDoService;
+import com.timix.todo.back.utils.Utils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +27,7 @@ public class CreateToDoController {
     @PostMapping()
     public ResponseEntity<?> create(@Valid @RequestBody CreateToDoDTO createToDoDTO, HttpServletRequest request) {
         try {
-            UUID userId = (UUID) request.getAttribute("idUser");
+            UUID userId = Utils.retrieveUserIdFromRequest(request);
             var result = createToDoService.execute(createToDoDTO, userId);
             return ResponseEntity.status(HttpStatus.CREATED).body(result);
         } catch (Exception e) {

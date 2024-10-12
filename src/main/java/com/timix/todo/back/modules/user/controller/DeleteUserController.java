@@ -2,6 +2,7 @@ package com.timix.todo.back.modules.user.controller;
 
 import com.timix.todo.back.modules.user.service.DeleteUserService;
 import com.timix.todo.back.modules.user.service.UpdateUserService;
+import com.timix.todo.back.utils.Utils;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -23,8 +24,9 @@ public class DeleteUserController {
 
     @DeleteMapping("/me")
     public ResponseEntity<Object> execute(HttpServletRequest request) {
-        UUID userId = (UUID) request.getAttribute("idUser");
+
         try {
+            UUID userId = Utils.retrieveUserIdFromRequest(request);
             deleteUserService.execute(userId);
             return ResponseEntity.noContent().build();
         } catch (Exception e) {

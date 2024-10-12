@@ -3,6 +3,7 @@ package com.timix.todo.back.modules.todo.controller;
 import com.timix.todo.back.modules.todo.Dto.CreateToDoDTO;
 import com.timix.todo.back.modules.todo.services.CreateToDoService;
 import com.timix.todo.back.modules.todo.services.UpdateToDoService;
+import com.timix.todo.back.utils.Utils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +28,8 @@ public class UpdateToDoController {
     @PatchMapping("/{id}")
     public ResponseEntity<Object> execute(@PathVariable UUID id, HttpServletRequest request) {
         try {
-            var result = updateToDoService.execute(id, (UUID) request.getAttribute("idUser"));
+            UUID userId = Utils.retrieveUserIdFromRequest(request);
+            var result = updateToDoService.execute(id, userId);
             return ResponseEntity.status(HttpStatus.CREATED).body(result);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());

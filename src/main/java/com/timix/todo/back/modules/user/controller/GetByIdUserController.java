@@ -1,6 +1,7 @@
 package com.timix.todo.back.modules.user.controller;
 
 import com.timix.todo.back.modules.user.service.GetByIdUserService;
+import com.timix.todo.back.utils.Utils;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,11 +24,8 @@ public class GetByIdUserController {
 
     @GetMapping("/me")
     public ResponseEntity<Object> execute(HttpServletRequest request) {
-        UUID userId = (UUID) request.getAttribute("idUser");
-        if (userId == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User ID not found in request");
-        }
         try {
+            UUID userId = Utils.retrieveUserIdFromRequest(request);
             var result = getByIdUserService.execute(userId);
             return ResponseEntity.status(HttpStatus.OK).body(result);
         } catch (Exception e) {

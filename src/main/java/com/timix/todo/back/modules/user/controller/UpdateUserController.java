@@ -2,6 +2,7 @@ package com.timix.todo.back.modules.user.controller;
 
 import com.timix.todo.back.modules.user.dto.UserUpdateDTO;
 import com.timix.todo.back.modules.user.service.UpdateUserService;
+import com.timix.todo.back.utils.Utils;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -22,8 +23,8 @@ public class UpdateUserController {
 
     @PutMapping("/me")
     public ResponseEntity<Object> execute(@RequestBody UserUpdateDTO userUpdateDTO, HttpServletRequest request) {
-        UUID userId = (UUID) request.getAttribute("idUser");
         try {
+            UUID userId = Utils.retrieveUserIdFromRequest(request);
             var result = updateUserService.execute(userUpdateDTO, userId);
             return ResponseEntity.ok(result);
         } catch (Exception e) {

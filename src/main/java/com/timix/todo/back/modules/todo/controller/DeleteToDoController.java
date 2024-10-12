@@ -4,6 +4,7 @@ import com.timix.todo.back.modules.todo.Dto.CreateToDoDTO;
 import com.timix.todo.back.modules.todo.services.CreateToDoService;
 import com.timix.todo.back.modules.todo.services.DeleteToDoService;
 import com.timix.todo.back.modules.todo.services.UpdateToDoService;
+import com.timix.todo.back.utils.Utils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +29,7 @@ public class DeleteToDoController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Object> execute(@PathVariable UUID id, HttpServletRequest request) {
         try {
-            UUID userId = (UUID) request.getAttribute("idUser");
+            UUID userId = Utils.retrieveUserIdFromRequest(request);
             deleteToDoService.execute(id, userId);
             return ResponseEntity.noContent().build();
         } catch (Exception e) {

@@ -2,6 +2,7 @@ package com.timix.todo.back.modules.todo.controller;
 
 import com.timix.todo.back.modules.todo.entity.ToDoEntity;
 import com.timix.todo.back.modules.todo.services.ListToDoService;
+import com.timix.todo.back.utils.Utils;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -26,7 +27,7 @@ public class ListToDoController {
     @GetMapping()
     public ResponseEntity<List<ToDoEntity>> execute(HttpServletRequest request) {
         try {
-            UUID userId = (UUID) request.getAttribute("idUser");
+            UUID userId = Utils.retrieveUserIdFromRequest(request);
             var result = listToDoService.execute(userId);
             return ResponseEntity.status(HttpStatus.OK).body(result);
         } catch (Exception e) {
