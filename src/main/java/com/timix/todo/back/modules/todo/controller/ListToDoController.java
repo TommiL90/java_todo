@@ -9,9 +9,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @RestController
@@ -25,10 +27,10 @@ public class ListToDoController {
     }
 
     @GetMapping()
-    public ResponseEntity<List<ToDoEntity>> execute(HttpServletRequest request) {
+    public ResponseEntity<List<ToDoEntity>> execute(HttpServletRequest request, @RequestParam(required = false) String q) {
         try {
             UUID userId = Utils.retrieveUserIdFromRequest(request);
-            var result = listToDoService.execute(userId);
+            var result = listToDoService.execute(userId, Optional.ofNullable(q));
             return ResponseEntity.status(HttpStatus.OK).body(result);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(null);
